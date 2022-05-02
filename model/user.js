@@ -1,3 +1,4 @@
+// MongoDB schema for user with first and last name, email, password, and token
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
