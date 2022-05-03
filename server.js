@@ -23,15 +23,30 @@ server.listen(port, () => {
 
   const auth = require("./middleware/auth");
 
-app.post("/welcome", auth, (req, res) => {
+app.post("/api/welcome", auth, (req, res) => {
   res.status(200).send("Welcome 🙌 ");
 });
-app.post("/login", async (req, res) => {
+
+app.post("/api/reserve", auth, (req, res) => {
+  const { email, reservationDate, resturantID, table } = req.body;
+
+  if (!(email)) {
+    res.status(400).send("All input is required");
+  }
+  
+  const user = await User.findOne({ email });
+  
+  
+
+  res.status(200).send("Welcome 🙌 ");
+});
+
+app.post("/api/login", async (req, res) => {
 
     // Our login logic starts here
     try {
       // Get user input
-      console.log(req.body)
+      // console.log(req.body)
       const { email, password } = req.body;
   
       // Validate user input
@@ -53,7 +68,7 @@ app.post("/login", async (req, res) => {
   
         // save user token
         user.token = token;
-  
+        
         // user
         res.status(200).json(user);
       }else{
@@ -67,13 +82,13 @@ app.post("/login", async (req, res) => {
   });
 
 
-app.post("/register", async (req, res) => {
+app.post("api/register", async (req, res) => {
 
     // Our register logic starts here
     try {
         // Get user input
-        console.log(req)
-        console.log(req.body)
+        // console.log(req)
+        // console.log(req.body)
       const { first_name, last_name, email, password } = req.body;
   
       // Validate user input
@@ -103,7 +118,7 @@ app.post("/register", async (req, res) => {
       // Create token
       const token = jwt.sign(
         { user_id: user._id, email },
-        process.env.TOKEN_KEY,
+          process.env.TOKEN_KEY,
         {
           expiresIn: "2h",
         }
@@ -131,9 +146,9 @@ io.on('connection', (socket) => {
 });
   
 class Restaurant{
-    constructor(name, menu, layout, stafflist, description, location){
+    constructor(name, phoneNumber, layout, stafflist, description, location){
         this.name = name
-        this.menu = menu
+        this.phoneNumber = phoneNumber
         this.layout = layout
         this.staff = stafflist
         this.description = description 
