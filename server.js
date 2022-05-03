@@ -10,6 +10,8 @@ var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
 const port = 3000;
 const User = require("./model/user");
+const Reservation = require("./model/reservation");
+
 
 server.listen(port, () => {
     console.log('Server listening at port %d', port);
@@ -22,13 +24,19 @@ server.listen(port, () => {
   TOKEN_KEY  = "ASDasdasdasdasd"
 
   const auth = require("./middleware/auth");
+const reservation = require('./model/reservation');
 
 app.post("/api/welcome", auth, (req, res) => {
   res.status(200).send("Welcome 🙌 ");
 });
 
-app.post("/api/reserve", auth, (req, res) => {
-  const { email, reservationDate, resturantID, table } = req.body;
+app.get("/profile", auth, (req, res) => {
+  res.status(200).send("Welcome 🙌 ");
+});
+
+app.post("/api/reserve", auth, async (req, res) => {
+  try{
+    const { email, reservationDate, resturantID, table } = req.body;
 
   if (!(email)) {
     res.status(400).send("All input is required");
@@ -39,6 +47,10 @@ app.post("/api/reserve", auth, (req, res) => {
   
 
   res.status(200).send("Welcome 🙌 ");
+  }catch (err) {
+    console.log(err);
+  }
+  
 });
 
 app.post("/api/login", async (req, res) => {
@@ -46,7 +58,7 @@ app.post("/api/login", async (req, res) => {
     // Our login logic starts here
     try {
       // Get user input
-      // console.log(req.body)
+      console.log(req)
       const { email, password } = req.body;
   
       // Validate user input
@@ -55,7 +67,7 @@ app.post("/api/login", async (req, res) => {
       }
       // Validate if user exist in our database
       const user = await User.findOne({ email });
-  
+      console.log(user)
       if (user && (await bcrypt.compare(password, user.password))) {
         // Create token
         const token = jwt.sign(
@@ -82,17 +94,17 @@ app.post("/api/login", async (req, res) => {
   });
 
 
-app.post("api/register", async (req, res) => {
+app.post("/api/register", async (req, res) => {
 
     // Our register logic starts here
     try {
         // Get user input
-        // console.log(req)
+        console.log(req)
         // console.log(req.body)
-      const { first_name, last_name, email, password } = req.body;
+      const { first_name, last_name, email, password, type } = req.body;
   
       // Validate user input
-      if (!(email && password && first_name && last_name)) {
+      if (!(email && password && first_name && last_name && type)) {
         res.status(400).send("All input is required");
       }
   
@@ -113,19 +125,20 @@ app.post("api/register", async (req, res) => {
         last_name,
         email: email.toLowerCase(), // sanitize: convert email to lowercase
         password: encryptedPassword,
+        type
       });
   
       // Create token
       const token = jwt.sign(
         { user_id: user._id, email },
-          process.env.TOKEN_KEY,
+          TOKEN_KEY,
         {
           expiresIn: "2h",
         }
       );
       // save user token
       user.token = token;
-  
+      console.log("successfull user creation")
       // return new user
       res.status(201).json(user);
     } catch (err) {
@@ -134,7 +147,77 @@ app.post("api/register", async (req, res) => {
     // Our register logic ends here
   });
   
+  app.post("/api/reservations", async (req, res) => {
 
+    // Our register logic starts here
+    try {
+        // Get user input
+        console.log(req)
+        // console.log(req.body)
+      const { resturantID, numberOfPeople} = req.body;
+      
+      // Validate user input
+      if (!(resturantID && numberOfPeople)) {
+        res.status(400).send("All input is required");
+      }
+      
+      let reservations = await Reservation.find({ resturantID });
+      free = []
+      for(let i = 0; i< reservations.length; i++){
+        console.log(reservations[i].clientId ,reservations[i].numberOfPeople )
+        if(reservations[i].clientId == "" && parseInt(numberOfPeople) <= parseInt(reservations[i].numberOfPeople)){
+          free.push(reservations[i])
+        }
+      }
+      free = JSON.stringify(free)
+    
+      res.status(201).json(free);
+    } catch (err) {
+      console.log(err);
+    }
+    // Our register logic ends here
+  });
+
+  app.post("/api/createReservation", async (req, res) => {
+
+    // Our register logic starts here
+    try {
+        // Get user input
+        console.log(req)
+        // console.log(req.body)
+      const { resturantID, table, reservationDate,numberOfPeople  } = req.body;
+      
+      // Validate user input
+      if (!(resturantID && table && reservationDate && numberOfPeople)) {
+        res.status(400).send("All input is required");
+      }
+  
+      // check if user already exist
+      // Validate if user exist in our database
+      confirmationNumber = Math.floor(100000 + Math.random() * 900000)
+      while(await Reservation.findOne({ confirmationNumber })){
+        confirmationNumber = Math.floor(100000 + Math.random() * 900000)  
+      }
+      // Create user in our database
+      const reservation = await Reservation.create({
+        name: "",
+        clientId: "",
+        resturantID,
+        table,
+        reservationDate,
+        numberOfPeople,
+        confirmationNumber,
+        details: ""
+      });
+
+      console.log("successfull reservation creation")
+      // return new user
+      res.status(201).json(reservation);
+    } catch (err) {
+      console.log(err);
+    }
+    // Our register logic ends here
+  });
 
 io.on('connection', (socket) => {
     console.log('a user connected');

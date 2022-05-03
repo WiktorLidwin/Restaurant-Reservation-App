@@ -8,7 +8,7 @@ const reservationSchema = new mongoose.Schema({
   reservationDate: { type: String },
   numberOfPeople: {type: String},
   confirmationNumber:{type:String, unique:true},
-  details: { type: String },
+  details: { type: String, default: null },
 });
 
 module.exports = mongoose.model("reservation", reservationSchema);
