@@ -43,7 +43,9 @@
                            <a class="nav-link" href="restaurant-admin.html">Add Your Restaurant</a>
                         </li>
                         <li class="nav-item">
-                           <button class="fa fa-user-circle" onclick="profileBtnOnClick()"></button>
+                           <form action="profile.html">
+                              <button class="fa fa-user-circle"></button>
+                          </form>
                         </li>
                      </ul>
                   </div>
@@ -82,22 +84,49 @@
       </section>
       <section>
          <p align = "center">Number of Seats</p>
-         <form align = "center">
-           <select id="seats" name="seats">
+         <form align = "center" action="POST">
+           <select id="cars" name="cars">
              <option value="1">1</option>
              <option value="2">2</option>
              <option value="3">3</option>
              <option value="4">4</option>
            </select>
-           <input type="button"value="Submit" onclick="yardhouseOnClickBtn()">
+           <br>
+           <br>
+           <input type="submit">
          </form>
       </section>
-      <section>
-         <div id="table"></div>
-      </section>
+      <br>
+      <br>
+      <br>
       <!-- end product section -->
       <!-- footer section -->
-      
+      <section >
+         <form id="resform" action="">
+            <div class="heading_container heading_center">
+               <h2 style="font-size: 45px">
+                  Available <span>Reservations</span>
+               </h2>
+               <br>
+            </div>
+            <table align="center">
+               <tr>
+                  <th>Table Number</th>
+                  <th>Number of Seats</th>
+                  <th>Date and Time</th>
+                  <th></th>
+               </tr>
+               <tr>
+                  <td>1</td>
+                  <td>4</td>
+                  <td>5/3/2022 16:30</td>
+                  <td>Reserve <input type="checkbox" class="" name="selected-table" value="1"></td>
+               </tr>
+            </table>
+            <br>
+            <input type="submit">
+         </form>
+      <br>
       <footer class="footer_section">
          <div class="container">
             <div class="row">
