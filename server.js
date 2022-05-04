@@ -54,6 +54,26 @@ app.post("/api/reserve", async (req, res) => {
   
 });
 
+app.post("/api/userreservations", async (req, res) => {
+  try{
+    const { email } = req.body;
+
+  if (!(email)) {
+    res.status(400).send("All input is required");
+  }
+  
+  const user = await User.findOne({ email });
+  clientId = user.id
+  let reservations = await Reservation.find({ clientId });
+  reservations = JSON.stringify(reservations)
+
+  res.status(200).json(reservations);
+  }catch (err) {
+    console.log(err);
+  }
+  
+});
+
 app.post("/api/login", async (req, res) => {
 
     // Our login logic starts here

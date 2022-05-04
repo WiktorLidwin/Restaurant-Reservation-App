@@ -222,6 +222,65 @@ function profileOnLoad(){
     document.getElementById("profileName").textContent = "Name: " + cookies.first_name+" "+ cookies.last_name
     document.getElementById("profileEmail").textContent = "Email: " + cookies.email
 
+    table = document.getElementById("profileTable");
+     
+    if (document.cookie == ""||document.cookie == undefined || document.cookie == null ||  document.cookie == "undefined"){
+        window.location.href = "/login.html"
+    }
+    var formData ={"email":cookies = JSON.parse(document.cookie).email, "token":cookies = JSON.parse(document.cookie).token}
+
+    $.ajax({
+        type: 'post',
+        url: '/api/userreservations',   
+        contentType: 'application/json',
+        data: JSON.stringify(formData),
+        xhrFields: {
+            withCredentials: false
+        },  
+        headers: {
+    
+        }, 
+        success: function (data) {
+            console.log(data)
+            reseverations = JSON.parse(data)
+            for (var i = 0; i < reseverations.length; i++) {
+                var reseveration = reseverations[i];
+                var row = document.createElement("TR");
+                row.class="tableRow"
+                var refCell = document.createElement("TD");
+                var growerCell = document.createElement("TD");
+                var itemCell = document.createElement("TD");
+                var confirmationbox = document.createElement("TD");
+                
+
+                row.appendChild(refCell);
+                row.appendChild(itemCell);
+                row.appendChild(growerCell);
+            
+                var ref = document.createTextNode(reseveration.table);
+                var grower = document.createTextNode(reseveration.reservationDate);
+                var item = document.createTextNode(reseveration.numberOfPeople);
+                var confirmationNumber = document.createTextNode(reseveration.confirmationNumber);
+                
+
+                refCell.appendChild(ref);
+                growerCell.appendChild(grower);
+                itemCell.appendChild(item);
+                confirmationbox.appendChild(confirmationNumber);
+                
+                table.appendChild(row);
+                // document.body.appendChild(document.createElement('hr'));
+              }
+            
+        },  
+        error: function (err) {
+            console.log(err)
+            console.log(err.status, " ", err.responseText)
+            console.log('We are sorry but our servers are having an issue right now');
+        }
+    })
+
+
 }
 
 function helloTextOnLoad(){
