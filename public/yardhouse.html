@@ -84,8 +84,8 @@
       </section>
       <section>
          <p align = "center">Number of Seats</p>
-         <form align = "center" action="POST">
-           <select id="cars" name="cars">
+         <form align = "center">
+           <select id="seats" name="seats">
              <option value="1">1</option>
              <option value="2">2</option>
              <option value="3">3</option>
@@ -93,7 +93,7 @@
            </select>
            <br>
            <br>
-           <input type="submit">
+           <input type="button" value="Submit" onclick="yardhouseOnClickBtn()">
          </form>
       </section>
       <br>
@@ -109,22 +109,24 @@
                </h2>
                <br>
             </div>
-            <table align="center">
-               <tr>
+            <table align="center" id="table">
+               <tr id="tableHeader">
                   <th>Table Number</th>
                   <th>Number of Seats</th>
                   <th>Date and Time</th>
                   <th></th>
                </tr>
-               <tr>
+               <!-- <tr>
                   <td>1</td>
                   <td>4</td>
                   <td>5/3/2022 16:30</td>
                   <td>Reserve <input type="checkbox" class="" name="selected-table" value="1"></td>
-               </tr>
+               </tr> -->
             </table>
             <br>
-            <input type="submit">
+            <input type="button" value="Submit" onclick="reservationSubmitonCLick()">
+            <h3 align="center" style="color:green;visibility:hidden;" id="confirmationText">Wrong</h3>
+                              
          </form>
       <br>
       <footer class="footer_section">

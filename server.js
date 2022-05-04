@@ -24,7 +24,7 @@ server.listen(port, () => {
   TOKEN_KEY  = "ASDasdasdasdasd"
 
   const auth = require("./middleware/auth");
-const reservation = require('./model/reservation');
+// const reservation = require('./model/reservation');
 
 app.post("/api/welcome", auth, (req, res) => {
   res.status(200).send("Welcome 🙌 ");
@@ -34,19 +34,20 @@ app.get("/profile", auth, (req, res) => {
   res.status(200).send("Welcome 🙌 ");
 });
 
-app.post("/api/reserve", auth, async (req, res) => {
+app.post("/api/reserve", async (req, res) => {
   try{
-    const { email, reservationDate, resturantID, table } = req.body;
+    const { confirmationNumber, email } = req.body;
 
-  if (!(email)) {
+  if (!(email && confirmationNumber)) {
     res.status(400).send("All input is required");
   }
   
   const user = await User.findOne({ email });
-  
-  
+  const reservation = await Reservation.findOne({ confirmationNumber });
+  reservation.clientId = user.id
+  await reservation.save();
 
-  res.status(200).send("Welcome 🙌 ");
+  res.status(200).json(reservation);
   }catch (err) {
     console.log(err);
   }

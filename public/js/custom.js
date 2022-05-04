@@ -1,3 +1,5 @@
+const { ConnectionCheckOutFailedEvent } = require("mongodb");
+
 var socket = io();
 // loginSubmit = document.getElementById("loginSubmit")
 // loginSubmit.addEventListener("click", (e)=>{
@@ -15,6 +17,62 @@ var socket = io();
      
 // })
 
+
+function reservationSubmitonCLick(){
+    table = document.getElementById("table")
+            
+    // document.getElementsByClassName("tableRow").remove();
+    var children = table.children;
+    // table.children = [table.children[0]];
+    for (var i = 1; i < children.length; i++) {
+        var tableChild = children[i];
+        // console.log(tableChild.children[3].children[0].value)
+        // console.log()
+        if(tableChild.children[3].children[0].checked){
+            if (document.cookie == ""||document.cookie == undefined || document.cookie == null ||  document.cookie == "undefined"){
+                window.location.href = "/login.html"
+            }
+            var formData ={"confirmationNumber":tableChild.children[3].children[0].id, "email":cookies = JSON.parse(document.cookie).email, "token":cookies = JSON.parse(document.cookie).token}
+    
+            $.ajax({
+                type: 'post',
+                url: '/api/reserve',   
+                contentType: 'application/json',
+                data: JSON.stringify(formData),
+                xhrFields: {
+                    withCredentials: false
+                },  
+                headers: {
+            
+                }, 
+                success: function (data) {
+                    console.log(data)
+                    // reseverations = JSON.parse(data)
+                    confirmationText = document.getElementById("confirmationText")
+                    confirmationText.textContent = "Your confirmation number is " + tableChild.children[3].children[0].id
+                    confirmationText.style.visibility = "visible"
+            
+                    console.log('Success');
+                    yardhouseOnClickBtn()
+                    // document.cookie = JSON.stringify(data);
+                    // window.location.href = "/profile.html"
+                },  
+                error: function (err) {
+                    console.log(err)
+                    console.log(err.status, " ", err.responseText)
+                    console.log('We are sorry but our servers are having an issue right now');
+                }
+            })
+            return;
+        }
+        // if(tableChild.class !== "tableRow"){
+        //     console.log("remove")
+        //     tableChild.remove()
+        // }
+    }
+}
+
+
 function yardhouseOnClickBtn(){
     numberOfPeople = document.getElementById("seats").value  
     var formData ={"resturantID":"yardhouse", "numberOfPeople":numberOfPeople}
@@ -31,46 +89,60 @@ function yardhouseOnClickBtn(){
         }, 
         success: function (data) {
             reseverations = JSON.parse(data)
+            console.log(data)
+            console.log(reseverations)
             table = document.getElementById("table")
-            var row = document.createElement("TR");
             
-            var refCell = document.createElement("TD");
-            var growerCell = document.createElement("TD");
-            var itemCell = document.createElement("TD");
-        
-            row.appendChild(refCell);
-            row.appendChild(growerCell);
-            row.appendChild(itemCell);
-        
-            var ref = document.createTextNode("Table");
-            var grower = document.createTextNode("Time");
-            var item = document.createTextNode("Seats");
-        
-            refCell.appendChild(ref);
-            growerCell.appendChild(grower);
-            itemCell.appendChild(item);
-        
-            table.appendChild(row);
+            // document.getElementsByClassName("tableRow").remove();
+            var children = table.children;
+            // table.children = [table.children[0]];
+            for (var i = 1; i < children.length; i++) {
+                var tableChild = children[i];
+                tableChild.remove()
+                i--;
+                // if(tableChild.class !== "tableRow"){
+                //     console.log("remove")
+                //     tableChild.remove()
+                // }
+            }
+            // for(child in children){
+            //     if (child.class == "tableRow"){
+            //         child.remove()
+            //     }
+            // }
             for (var i = 0; i < reseverations.length; i++) {
                 var reseveration = reseverations[i];
                 var row = document.createElement("TR");
-            
+                row.class="tableRow"
                 var refCell = document.createElement("TD");
                 var growerCell = document.createElement("TD");
                 var itemCell = document.createElement("TD");
-            
+                var checkbox = document.createElement("TD");
+                
+
                 row.appendChild(refCell);
-                row.appendChild(growerCell);
                 row.appendChild(itemCell);
+                row.appendChild(growerCell);
+                row.appendChild(checkbox);
             
                 var ref = document.createTextNode(reseveration.table);
                 var grower = document.createTextNode(reseveration.reservationDate);
                 var item = document.createTextNode(reseveration.numberOfPeople);
-            
+                var reserveText = document.createTextNode("Reserve");
+                var reserveCheckbox = document.createElement("INPUT");
+                reserveCheckbox.type = "checkbox"
+                reserveCheckbox.name = "selected-table"
+                
+                reserveCheckbox.value = "1"
+                reserveCheckbox.value = "Reserve"
+                reserveCheckbox.id = reseveration.confirmationNumber
+
                 refCell.appendChild(ref);
                 growerCell.appendChild(grower);
                 itemCell.appendChild(item);
-            
+                
+                checkbox.appendChild(reserveText);
+                checkbox.appendChild(reserveCheckbox);
                 table.appendChild(row);
                 // document.body.appendChild(document.createElement('hr'));
               }
